@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask
+  labels:
+    name: flask
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask
+  template:
+    metadata:
+      labels:
+        app: flask
+    spec:
+      containers:
+      - name: flask
+        image: tingwai/market_data_frontend:0.1
+        imagePullPolicy: Always
+        env:
+        - name: FLASK_ENV
+          value: "development"
+        - name: FLASK_APP
+          value: "market_data_frontend.py"
+        ports:
+        - containerPort: 5000

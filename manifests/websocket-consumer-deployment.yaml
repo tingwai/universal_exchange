@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer
+  labels:
+    app: consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consumer
+  template:
+    metadata:
+      labels:
+        app: consumer
+    spec:
+      initContainers:
+      - name: pre-populate-redis
+        image: tingwai/websocket_consumer:0.1
+        imagePullPolicy: Always
+        command: ['python', 'pre_populate_redis.py']
+      containers:
+      - name: websocket-consumer
+        image: tingwai/websocket_consumer:0.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080

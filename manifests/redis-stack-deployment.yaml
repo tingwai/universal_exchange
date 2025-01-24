@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "redis-stack"
+  namespace: default
+  labels:
+    app: "redis-stack"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "redis-stack"
+  template:
+    metadata:
+      labels:
+        app: "redis-stack"
+    spec:
+      containers:
+      - name: "redis-stack"
+        image: redis/redis-stack:7.4.0-v2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 6379
+          name: db
+        - containerPort: 8001
+          name: "redis-insight"
+        env:
+        - name: REDISTIMESERIES_ARGS
+          value: "COMPACTION_POLICY=avg:1m:10d;avg:10m:10d"
