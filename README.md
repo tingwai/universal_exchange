@@ -16,6 +16,9 @@ Included Dockerfiles (images pushed to Dockerhub) and Kubernetes yaml files so e
   - `pre_populate_redis` (initContainer): handles initial setup of Redis time series keys and compaction rules. Also pre-populates Redis with fake data so frontend has data to display. (All data after spinning up stack will be real data from Binance).
 - `market_data_frontend`: minimal Flask frontend to show current token prices and fast data retrieval from Redis for any time bucket. Each time the graph is updated, after clicking the dropdown menu, data is re-fetched from Redis on purpose to demonstrate there are minimal load times even without caching
 - `redis-stack`: uses Redis time series to store ticker data and compact time series data using `TS.CREATERULE` to display for different time bucket graphs (all data, 1min, 1hr, 1day)
+  - key `price:<ticker>`: raw data from Binance websocket. (timestamp = Unix timestamp in milliseconds, value = price as double)
+  - key `minuteAvgPrice:<ticker>`, `hourAvgPrice:<ticker>`, `dailyAvgPrice:<ticker>`: compacted time series data for 1min, 1hr, 1day time buckets. (timestamp = Unix timestamp in milliseconds, value = price as double)
+  - this schema can be easily extended to store any time series data like order book bid/ask prices, price changes, etc. (`<metric>:<ticker>` eg. `priceChange:btcusdt`)
 
 
 ## Install + Run using [minikube](https://minikube.sigs.k8s.io/)
@@ -32,6 +35,7 @@ minikube ip
 
 ## Ideas for improvements
 
+- when ingesting from multiple market feeds the keys can be refactored to mention the source too, eg. `binance:price:btcusdt`
 - for demo purposes frontend calls Redis directly, instead frontend should call a backend API for data
 - support sharding `websocket_consumer` service
 - add Redis persistence
